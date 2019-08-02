@@ -11,6 +11,35 @@
 - LoRaパケット受信時に呼び出されるコールバック関数
 - datには受信パケットデータを含むJSONオブジェクトが渡される
 
+### function onLoRaWANRx(message)
+
+- LoRaデータパケット受信時に呼び出されるコールバック関数
+- messageには連想配列オブジェクト(?)が渡される
+
+#### messageのメンバ
+
+|Field|型|概要|
+|:-:|:-:|:--|
+|time|string|受信時刻|
+|devaddr|string|デバイスアドレス|
+|deveui|string|DevEUI|
+|gatewayeui|string|GatewayのEUI|
+|rssi|integer| |
+|lsnr|integer| |
+|size|unsigned integer|データ長(バイト数)|
+|data|string|データ(HEX文字列)|
+|b64_data|string|Base64エンコードされたデータ|
+|freq|float|通信周波数|
+|datr|string|　|
+|port|unsigned integer|　|
+|uplink_count|unsigned integer|　|
+|gateway_list|string|\"\<gatewayeui\>;\<rssi\>;\<lsnr\>\"の形式|
+
+
+```json
+message: {"time":"2019-08-02T17:10:31.626784+09:00","devaddr":"12345678","deveui":"1122334455667788","gatewayeui":"000b78fffea0016a","rssi":-120,"lsnr":-13.5,"size":40,"data":"09abcdef000000000000000000000000e1fac74209abcdef000000000000000000000000e1fac742","b64_data":"CavN7wAAAAAAAAAAAAAAAOH6x0IJq83vAAAAAAAAAAAAAAAA4frHQg==","freq":927.2,"datr":"SF10BW125","port":5,"uplink_count":3,"gateway_list":"000b78fffea0016a;-120;-13.500000"}
+```
+
 ### debug_print(message)
 
 - LOGパネルにメッセージを表示する
@@ -67,4 +96,3 @@
     "data":"H3P3N2i9qc4yt7rK7ldqoeCVJGBybzPY5h1Dd7P7p8v"
 }
 ```
-
