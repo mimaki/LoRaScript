@@ -5,11 +5,30 @@
 //- function onLoRaRx (data) {}
 //you can call debug_print(msg) to print log
 //you can call send_pkt(data) to forward data
-var count = 0;
 function onInit() {
   debug_print("on init");
   setInterval(onInterval, 60000);   // 60sec
 }
+
+function onInterval() {
+  debug_print("on interval");
+}
+
+const DATATYPES = [
+  'unknown',
+  'Acceleration',
+  'Gyro',
+  'Geo-magetic',
+  'Temperature',
+  'Humidity',
+  'Air-pressure',
+  'Illuminance',
+  '',
+  'GPS(GGA)',
+  'GPS(VTG)'
+];
+DATATYPES[0x32] = 'Battery';
+DATATYPES[0xff] = 'Custom';
 
 const https = require('https');
 // https://maker.ifttt.com/trigger/plato/with/key/bu9hN2X6p-vMdbxqCmAEcpeEGd2bwckakT7lTxQKe4F
@@ -18,14 +37,11 @@ const IFTTT_EVENT = 'plato';
 const IFTTT_KEY = 'mm1ZpCyvXwZn8Cj0eUqt9Sm5XK15Idf5lKf6yY84Xrf';
 const IFTTT_PATH = '/trigger/' + IFTTT_EVENT + '/with/key/' + IFTTT_KEY;
 
-function onInterval() {
-  debug_print("on interval");
-
-  count++;
+function ifttt(devid, dtype, values) {
   var postData = {
-    "value1": "test " + count,
-    "value2": "123",
-    "value3": "abcdefghijklmnopqrstuvwxyz"
+    "value1": devid,
+    "value2": dtype,
+    "value3": JSON.stringify(values)
   };
   var postDataStr = JSON.stringify(postData);
   var options = {
@@ -98,10 +114,12 @@ function onLoRaWANRx(message) {
 //   for (i=; i<3; i++) {
 //     devid[i] = buf[i+1];
 //   }
-  debug_print("devid = " + rcv.data.substr(2, 6));
+  var dtype = buf[0];
+  var devid = rcv.data.substr(2, 6);
+  debug_print("devid=" + devid + ', dtype=' + dtype);
 
   var val = [];
-  switch (buf[0]) {
+  switch (dtype) {
   case 0x01:    // Acceleration
   case 0x02:    // Gyro
   case 0x03:    // Geo-magnetic
@@ -130,6 +148,8 @@ function onLoRaWANRx(message) {
   for (i = 0; i < val.length; i++) {
     debug_print("val[" + i + "] = " + val[i]);
   }
+
+  ifttt(devid, DATATYPES[dtype], val);
 
 //   try {
 //     debug_print("message.time ", message.time);
