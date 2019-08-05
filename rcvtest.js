@@ -5,15 +5,53 @@
 //- function onLoRaRx (data) {}
 //you can call debug_print(msg) to print log
 //you can call send_pkt(data) to forward data
+var count = 0;
 function onInit() {
   debug_print("on init");
   setInterval(onInterval, 60000);   // 60sec
 }
 
+const https = require('https');
+// https://maker.ifttt.com/trigger/plato/with/key/bu9hN2X6p-vMdbxqCmAEcpeEGd2bwckakT7lTxQKe4F
+const IFTTT_HOST = 'maker.ifttt.com';
+const IFTTT_EVENT = 'plato';
+const IFTTT_KEY = 'mm1ZpCyvXwZn8Cj0eUqt9Sm5XK15Idf5lKf6yY84Xrf';
+const IFTTT_PATH = '/trigger/' + IFTTT_EVENT + '/with/key/' + IFTTT_KEY;
+
 function onInterval() {
   debug_print("on interval");
-}
 
+  count++;
+  var postData = {
+    "value1": "test " + count,
+    "value2": "123",
+    "value3": "abcdefghijklmnopqrstuvwxyz"
+  };
+  var postDataStr = JSON.stringify(postData);
+  var options = {
+    host: IFTTT_HOST,
+    port: 443,
+    path: IFTTT_PATH,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': postDataStr.length
+    }
+  }
+  var req = https.request(options, (res) => {
+    debug_print('STATUS: ' + res.statusCode);
+    debug_print('HEADERS: ' + JSON.stringify(res.headers));
+    res.setEncoding('utf8');
+    res.on('data', (chunk) => {
+      debug_print('BODY: ' + chunk);
+    });
+  });
+  req.on('error', (e) => {
+    debug_print('problem with request: ' + e.message);
+  });
+  req.write(postDataStr);
+  req.end();
+}
 
 // function dump(bin, len) {
 //   var x, y, hex;
