@@ -53,6 +53,46 @@ function onLoRaWANRx(message) {
   rcv = message;
 
   debug_print("devaddr:" + rcv.devaddr + ", deveui:" + rcv.deveui + ", size:" + rcv.size + ", data:" + rcv.data);
+
+  var i;
+  var buf = new Buffer(rcv.b64_data, 'base64');
+//   var devid = [];
+//   for (i=; i<3; i++) {
+//     devid[i] = buf[i+1];
+//   }
+  debug_print("devid = " + rcv.data.substr(2, 6));
+
+  var val = [];
+  switch (buf[0]) {
+  case 0x01:    // Acceleration
+  case 0x02:    // Gyro
+  case 0x03:    // Geo-magnetic
+    val[0] = buf.readFloatLE(4);
+    val[1] = buf.readFloatLE(8);
+    val[2] = buf.readFloatLE(12);
+    break;
+  case 0x04:    // Temperature
+  case 0x05:    // Humidity
+  case 0x06:    // Air-pressure
+  case 0x07:    // Illuminance
+    val[0] = buf.readFloatLE(4);
+    break;
+  case 0x09:    // GPS(GGA)
+  case 0x0a:    // GPS(VTG)
+    val[0] = buf.readFloatLE(4);
+    val[1] = buf.readFloatLE(8);
+    val[2] = buf.readFloatLE(12);
+    val[3] = buf.readFloatLE(16);
+    break;
+  case 0x32:
+    val[0] = buf[4];
+    val[1] = buf[5];
+    break;
+  }
+  for (i = 0; i < val.length; i++) {
+    debug_print("val[" + i + "] = " + val[i]);
+  }
+
 //   try {
 //     debug_print("message.time ", message.time);
 //     debug_print("message.data ", message.data);
