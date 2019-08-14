@@ -118,38 +118,44 @@ function onLoRaWANRx(message) {
   var devid = rcv.data.substr(2, 6);
   debug_print("devid=" + devid + ', dtype=' + dtype);
 
-  var val = [];
-  switch (dtype) {
-  case 0x01:    // Acceleration
-  case 0x02:    // Gyro
-  case 0x03:    // Geo-magnetic
-    val[0] = buf.readFloatLE(4);
-    val[1] = buf.readFloatLE(8);
-    val[2] = buf.readFloatLE(12);
-    break;
-  case 0x04:    // Temperature
-  case 0x05:    // Humidity
-  case 0x06:    // Air-pressure
-  case 0x07:    // Illuminance
-    val[0] = buf.readFloatLE(4);
-    break;
-  case 0x09:    // GPS(GGA)
-  case 0x0a:    // GPS(VTG)
-    val[0] = buf.readFloatLE(4);
-    val[1] = buf.readFloatLE(8);
-    val[2] = buf.readFloatLE(12);
-    val[3] = buf.readFloatLE(16);
-    break;
-  case 0x32:
-    val[0] = buf[4];
-    val[1] = buf[5];
-    break;
-  }
-  for (i = 0; i < val.length; i++) {
-    debug_print("val[" + i + "] = " + val[i]);
-  }
+  // var val = [];
+  // switch (dtype) {
+  // case 0x01:    // Acceleration
+  // case 0x02:    // Gyro
+  // case 0x03:    // Geo-magnetic
+  //   val[0] = buf.readFloatLE(4);
+  //   val[1] = buf.readFloatLE(8);
+  //   val[2] = buf.readFloatLE(12);
+  //   break;
+  // case 0x04:    // Temperature
+  // case 0x05:    // Humidity
+  // case 0x06:    // Air-pressure
+  // case 0x07:    // Illuminance
+  //   val[0] = buf.readFloatLE(4);
+  //   break;
+  // case 0x09:    // GPS(GGA)
+  // case 0x0a:    // GPS(VTG)
+  //   val[0] = buf.readFloatLE(4);
+  //   val[1] = buf.readFloatLE(8);
+  //   val[2] = buf.readFloatLE(12);
+  //   val[3] = buf.readFloatLE(16);
+  //   break;
+  // case 0x32:
+  //   val[0] = buf[4];
+  //   val[1] = buf[5];
+  //   break;
+  // }
+  // for (i = 0; i < val.length; i++) {
+  //   debug_print("val[" + i + "] = " + val[i]);
+  // }
+  // ifttt(devid, DATATYPES[dtype], val);
 
-  ifttt(devid, DATATYPES[dtype], val);
+  if (dtype == 0x04) {      // temperature
+    ifttt(devid + '-tmp', buf.readFloatLE(4), null);
+  }
+  else if (dtype == 0x05) { // humidity
+    ifttt(devid + '-hum', buf.readFloatLE(4), null);
+  }
 
 //   try {
 //     debug_print("message.time ", message.time);
