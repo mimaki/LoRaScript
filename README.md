@@ -1,5 +1,7 @@
 # TLG79 series LoRaScript
 
+[Kiwitec LoRa Gatewayへの接続](TLG79.md)
+
 ## Methods
 
 ### onInit()
