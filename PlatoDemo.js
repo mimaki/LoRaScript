@@ -43,9 +43,9 @@ const http = require('http');
 // http://ec2-18-177-142-222.ap-northeast-1.compute.amazonaws.com/
 const PLATO_MAP_URL = 'ec2-18-177-142-222.ap-northeast-1.compute.amazonaws.com';
 
-function debug_print(str) {
-  console.log(str);
-}
+// function debug_print(str) {
+//   console.log(str);
+// }
 
 function post_to_map(b64data) {
   var options = {
@@ -143,7 +143,7 @@ function onLoRaWANRx(message) {
 
   debug_print("devaddr:" + rcv.devaddr + ", deveui:" + rcv.deveui + ", size:" + rcv.size + ", data:" + rcv.data);
 
-  post_to_map(rcv.b64data);
+  post_to_map(rcv.b64_data);
 
 //   var i;
 //   var buf = new Buffer(rcv.b64_data, 'base64');
@@ -204,7 +204,7 @@ function onLoRaWANRx(message) {
 }
 
 function onLoRaRx(data) {
-  debug_print("onLoRaRx");
+//   debug_print("onLoRaRx\n");
 //   debug_print("data " + data);
 
 //   try {
